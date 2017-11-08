@@ -9,7 +9,7 @@ var mongojs = require('mongojs'); //Conexão com o mongo
  */
 
 var ObjectID = mongojs.ObjectID; //Tipo a chave primária
-var db = mongojs(process.env.MONGO_URL || 'mongodb://lohttps://github.com/vinnyoodles/react-native-socket-io-examplecalhost:27017/local'); //link de conexão
+var db = mongojs(process.env.MONGO_URL || 'mongodb://localhost:27017/local'); //link de conexão
 var app = express(); //Instanciado com sucesso
 var server = http.Server(app); //Nunca nem vi
 var websocket = socketio(server); //Que dia foi isso
