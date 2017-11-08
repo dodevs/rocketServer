@@ -47,12 +47,12 @@ websocket.on('connection', (socket) => { //No evento da conexão, executa a fun�
 function onUserJoined(userId, socket) {
   try {
     // The userId is null for new users.
+    // -traduzido- O userId é nulo para novos usuarios
     if (!userId) {
-      // Estou confuso :/
-      var user = db.collection('users').insert({}, (err, user) => {
-        socket.emit('userJoined', user._id);
-        users[socket.id] = user._id;
-        _sendExistingMessages(socket);
+      var user = db.collection('users').insert({}, (err, user) => { // Na ação da inserção, passa o 'user' como parametro
+        socket.emit('userJoined', user._id); // Reenvia com o id obitido na inserção
+        users[socket.id] = user._id; //Adiciona o id no objeto
+        _sendExistingMessages(socket); //Envia as mensagens já existentes
       });
     } else {
       // Adiciona o userId no objeto
@@ -67,6 +67,7 @@ function onUserJoined(userId, socket) {
 // When a user sends a message in the chatroom.
 // -traduzido- Quando um usuario manda mensagem na sala de batepapo
 function onMessageReceived(message, senderSocket) {
+  // 'userId' recebe o 'id' correspondente na lista
   var userId = users[senderSocket.id];
   // Safety check.
   if (!userId) return;
@@ -93,7 +94,9 @@ function _sendExistingMessages(socket) {
 }
 
 // Save the message to the db and send all sockets but the sender.
+// -traduzido- Salva a mensagem no banco de dados e envia todos os socket mais quem enviou
 function _sendAndSaveMessage(message, socket, fromServer) {
+  // Cria um objeto para ser salvo no mongo
   var messageData = {
     text: message.text,
     user: message.user,
@@ -103,17 +106,20 @@ function _sendAndSaveMessage(message, socket, fromServer) {
 
   db.collection('messages').insert(messageData, (err, message) => {
     // If the message is from the server, then send to everyone.
+    // -traduzido- Se a mensagem foi enviada pelo server, ira enviar para todos
     var emitter = fromServer ? websocket : socket.broadcast;
+    // Envia a mensagem
     emitter.emit('message', [message]);
   });
 }
 
 // Allow the server to participate in the chatroom through stdin.
+// -traduzido- Permite o servidor participar da sala de batepapo através desse 'stdin'
 var stdin = process.openStdin();
 stdin.addListener('data', function(d) {
   _sendAndSaveMessage({
     text: d.toString().trim(),
     createdAt: new Date(),
     user: { _id: 'robot' }
-  }, null /* no socket */, true /* send from server */);
+  }, null /* sem socket */, true /* Enviado pelo servidor */);
 });
